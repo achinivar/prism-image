@@ -35,7 +35,7 @@ else
     dnf5 -y install ffmpeg --allowerasing
 fi
 
-dnf5 install -y \
+dnf5 install -y --skip-unavailable \
     libavcodec-freeworld \
     gstreamer1-libav \
     gstreamer1-plugins-ugly \
@@ -71,5 +71,3 @@ curl --retry 3 -Lo /etc/flatpak/remotes.d/flathub.flatpakrepo https://dl.flathub
 mv -f /usr/lib/systemd/system/flatpak-add-flathub-repos.service /usr/lib/systemd/system/flatpak-add-fedora-repos.service
 
 ### Example for enabling a System Unit File
-
-systemctl enable podman.socket
