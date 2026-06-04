@@ -28,7 +28,6 @@ The local AI stack runs as a system service, exposing a standard OpenAI-compatib
 
 - [Fedora Silverblue](https://fedoraproject.org/silverblue/) — immutable Fedora base
 - [Universal Blue](https://universal-blue.org/) — OCI image toolchain
-- [Lemonade](https://github.com/lemonade-hq/lemonade) — local AI inference orchestration
 - [Flatpak](https://flatpak.org/) — application delivery
 
 ## Status
