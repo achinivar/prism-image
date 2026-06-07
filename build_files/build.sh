@@ -1,6 +1,33 @@
 #!/bin/bash
 
+#The set command below turns on strict bash mode for the script:
+#-o u - error on unset variables
+#-e - exit as soon as any command fails
+#-x - print each command as it runs (useful in build logs)
+#pipefail - a pipeline fails if any command in it fails, not just the last one
 set -ouex pipefail
+
+### Copy custom system files
+# -r - copy directories recursively
+# -v - verbose output
+# -K - treat symlinked directories as real directories (safer when merging onto /)
+rsync -rvK /ctx/sys_files/ /
+
+# make root's home
+# The custom root was used in the Universal Blue build script, so I've kept it here for now.
+# The reason for this custom root is unknown, so commenting it out for now.
+#mkdir -p /var/roothome
+
+# Install dnf5 if not installed
+if ! rpm -q dnf5 >/dev/null; then
+    rpm-ostree install dnf5 dnf5-plugins
+fi
+
+# mitigate upstream packaging bug: https://bugzilla.redhat.com/show_bug.cgi?id=2332429
+# swap the incorrectly installed OpenCL-ICD-Loader for ocl-icd, the expected package
+# NOTE - Cursor's research tells me this issue should be fixed in Fedora 44, so commenting it out for now.
+#dnf5 -y swap --repo='fedora' \
+#    OpenCL-ICD-Loader ocl-icd
 
 ### Install packages
 
@@ -52,10 +79,6 @@ dnf5 -y remove rpmfusion-free-release rpmfusion-nonfree-release
 # dnf5 -y install package
 # Disable COPRs so they don't end up enabled on the final image:
 # dnf5 -y copr disable ublue-os/staging
-
-### Copy custom system files
-
-rsync -rvK /ctx/sys_files/ /
 
 ### Set up Flathub as the only Flatpak remote
 

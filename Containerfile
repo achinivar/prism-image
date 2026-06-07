@@ -1,10 +1,20 @@
-# Allow build scripts to be referenced without being copied into the final image
+# Prism OS - https://github.com/achinivar/prism-os
+
+#ARG is the equivalent of ENV or defines passed to the build process
+ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/silverblue:44
+
+# Allow build scripts to be referenced without being copied into the final imagei
+# The below "FROM" line creates a named build stage called ctx from an empty image (scratch), 
+# then copies repo files into it so later stages can bind-mount them during the main RUN
 FROM scratch AS ctx
-COPY build_files /
+# NOTE - Use the /ctx prefix to access the copied over files in the RUN command below
+COPY build_files /ctx/build_files
 COPY sys_files /sys_files
+# TODO: packages.json should contain lists of RPM packages to install or remove
+#COPY packages.json /packages.json
 
 # Base Image
-FROM quay.io/fedora-ostree-desktops/silverblue:44
+FROM ${BASE_IMAGE}
 
 ## Other possible base images include:
 # FROM ghcr.io/ublue-os/bazzite:latest
