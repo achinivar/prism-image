@@ -1,28 +1,29 @@
 # Prism OS
 
-An opinionated, AI-first Linux distribution built on [Fedora Silverblue](https://fedoraproject.org/silverblue/) — immutable, privacy-focused, and designed to run local AI out of the box.
+A Linux distribution built around a simple idea: local AI should just work.
 
-## What is Prism OS?
+## The problem
 
-Prism OS is a curated desktop operating system for people who want capable, on-device AI without cloud dependency. It ships with a local inference stack pre-configured and ready to use — no accounts, no API keys, no data leaving your machine.
+The open-source AI ecosystem has never been more capable. There are excellent models, inference engines, voice tools, and agents — all free, all running on consumer hardware and none of it sending your data anywhere.
 
-It is built on the [Universal Blue](https://universal-blue.org/) toolchain, using atomic image-based updates to keep the system stable, reproducible, and easy to maintain.
+But using any of it means figuring out installation of missing drivers, manual configurations, setting up local run-times, containers and guard-rails and deciding which model to use - all of which can be daunting to an everyday user. 
+Also, Developers who want to ship AI-powered apps have no stable platform to target. 
 
-## How it works
+## What Prism OS is
 
-Prism OS is distributed as two complementary artifacts:
+Prism OS is an opinionated Linux desktop that ships the capability to run local AI as a first-class feature of the operating system, not as an add-on or a tutorial or a script you found on Reddit.
 
-- **OCI Image** — an immutable, signed container image hosted on the GitHub Container Registry (GHCR). Existing Fedora Silverblue or Universal Blue users can rebase onto it directly.
-- **Installable ISO** — a standalone installer for fresh installs, with Flatpaks bundled and the OCI image embedded.
+It is built on [Fedora Silverblue](https://fedoraproject.org/silverblue/) (immutable and reliable) using the [Universal Blue](https://universal-blue.org/) toolchain. It comes with a curated local inference stack pre-configured and running on first boot. Text, voice, and embeddings are all available to apps through a single, stable API without any setup or cloud subscription required.
 
-The local AI stack runs as a system service, exposing a standard OpenAI-compatible API endpoint to all applications. Apps can use this endpoint without knowing anything about the underlying hardware or which models are running.
+For **everyday users**, it means being able to run local agents and AI tools the same way you'd open any other app.
 
-## Design principles
+For **developers**, it means a real platform to build and ship AI-native applications against — with a consistent API surface, predictable hardware targets, and users who are already set up to run what you make.
 
-- **Local first.** All inference runs on-device. No cloud fallback, no telemetry.
-- **Immutable base.** The OS image is atomic and signed. System changes happen through image updates, not package mutations.
-- **Curated, not configurable.** Prism OS makes opinionated choices so users don't have to. The AI stack, model selection, and app ecosystem are hand-picked.
-- **Open API surface.** Applications talk to a single, stable OpenAI-compatible endpoint regardless of the underlying hardware.
+## How it's built
+
+Prism OS is distributed as a signed OCI image (for users rebasing from Fedora Silverblue or Universal Blue) and a standalone ISO for fresh installs (work in progress). The system is immutable and the AI stack is part of the image itself.
+
+Applications talk to a local OpenAI-compatible endpoint. The OS handles everything underneath: model selection, hardware acceleration, context management. Apps don't need to know how any of it works.
 
 ## Built on
 
@@ -32,4 +33,4 @@ The local AI stack runs as a system service, exposing a standard OpenAI-compatib
 
 ## Status
 
-Prism OS is in active development. Contributions and feedback are welcome.
+Prism OS is in active development and is not yet ready for testing. 
