@@ -25,9 +25,34 @@ fi
 
 # mitigate upstream packaging bug: https://bugzilla.redhat.com/show_bug.cgi?id=2332429
 # swap the incorrectly installed OpenCL-ICD-Loader for ocl-icd, the expected package
-# NOTE - Cursor's research tells me this issue should be fixed in Fedora 44, so commenting it out for now.
+# NOTE - This package (ocl-icd) is swapped to fix support for OpenCL's use of AMD (ROCm) and NVIDIA (CUDA) GPUs.
+# But Cursor's research tells me this issue should be fixed in Fedora 44, so commenting it out for now.
 #dnf5 -y swap --repo='fedora' \
 #    OpenCL-ICD-Loader ocl-icd
+
+### Install llama.cpp
+
+# Step 1 - mesa-vulkan-drivers and vulkan-loader are required for llama.cpp to work. 
+# They should be already installed on the base image, but just in case, we'll install them here.
+if ! rpm -q vulkan-loader >/dev/null; then
+    dnf5 -y install vulkan-loader
+fi
+
+if ! rpm -q mesa-vulkan-drivers >/dev/null; then
+    dnf5 -y install mesa-vulkan-drivers
+fi
+
+# Step 2 - Download and install llama.cpp
+# Note that though the name has "ubuntu" in it, it should work on any Linux distribution.
+# Binaries and bundled .so files live together under /usr/lib/llama.cpp (llama-server uses RUNPATH $ORIGIN).
+LLAMA_BUILD="b9553"
+# install -d creates /usr/lib/llama.cpp (and any missing parent dirs) if it doesn't already exist — like mkdir -p
+install -d /usr/lib/llama.cpp
+curl -fsSL \
+  "https://github.com/ggml-org/llama.cpp/releases/download/${LLAMA_BUILD}/llama-${LLAMA_BUILD}-bin-ubuntu-vulkan-x64.tar.gz" \
+  | tar -xz --strip-components=1 -C /usr/lib/llama.cpp/
+chmod +x /usr/lib/llama.cpp/llama-server
+ln -sf ../lib/llama.cpp/llama-server /usr/bin/llama-server
 
 ### Install packages
 
@@ -36,7 +61,9 @@ fi
 # https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/43/x86_64/repoview/index.html&protocol=https&redirect=1
 
 # this installs a package from fedora repos
-dnf5 install -y tmux
+dnf5 install -y tmux zenity
+
+chmod +x /usr/libexec/prism/ensure-llama-model
 
 # H.264 decode for Videos (GStreamer) and Firefox — patent licensing via Cisco OpenH264 (official Fedora repo)
 dnf5 config-manager setopt fedora-cisco-openh264.enabled=1

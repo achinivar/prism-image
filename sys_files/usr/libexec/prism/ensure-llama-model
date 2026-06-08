@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -euo pipefail
+
+MODEL="/var/lib/llama/models/default.gguf"
+MODEL_URL="https://huggingface.co/unsloth/Qwen3.5-2B-GGUF/resolve/main/Qwen3.5-2B-Q4_K_M.gguf"
+
+# Model already present — nothing to do (llama-server.path starts the server)
+[[ -f "$MODEL" ]] && exit 0
+
+install -d /var/lib/llama/models
+
+if [[ "${1:-}" == "--gui" ]]; then
+    if ! zenity --question \
+        --title="Prism OS — Local AI" \
+        --text="Local AI models will be downloaded.\n\n1.3 GB will be downloaded, continue?"; then
+        exit 0
+    fi
+else
+    read -r -p "Download default AI model? [y/N] " ans
+    [[ "$ans" =~ ^[Yy]$ ]] || exit 0
+fi
+
+curl -fL --retry 3 -o "${MODEL}.part" "$MODEL_URL"
+mv "${MODEL}.part" "$MODEL"
+chmod 644 "$MODEL"
