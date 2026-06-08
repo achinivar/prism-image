@@ -7,8 +7,8 @@ ConditionPathExists=/var/lib/prism/models/default.gguf
 [Service]
 Type=simple
 EnvironmentFile=/usr/lib/prism/llama-server.env
-WorkingDirectory=/usr/lib/llama.cpp
-ExecStart=/usr/lib/llama.cpp/llama-server \
+WorkingDirectory=/usr/bin/llama
+ExecStart=/usr/bin/llama/llama-server \
     --host 127.0.0.1 \
     --port 8080 \
     --model /var/lib/prism/models/default.gguf \
