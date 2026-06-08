@@ -46,12 +46,27 @@ fi
 # Note that though the name has "ubuntu" in it, it should work on any Linux distribution.
 # Binaries and bundled .so files live together under /usr/lib/llama.cpp (llama-server uses RUNPATH $ORIGIN).
 LLAMA_BUILD="b9553"
+LLAMA_TARBALL="/tmp/llama-${LLAMA_BUILD}-bin-ubuntu-vulkan-x64.tar.gz"
+LLAMA_URL="https://github.com/ggml-org/llama.cpp/releases/download/${LLAMA_BUILD}/llama-${LLAMA_BUILD}-bin-ubuntu-vulkan-x64.tar.gz"
 # install -d creates /usr/lib/llama.cpp (and any missing parent dirs) if it doesn't already exist — like mkdir -p
 install -d /usr/lib/llama.cpp
+# Download to a file first — piping curl straight into tar fails on partial 504 responses.
 curl -fsSL \
-  "https://github.com/ggml-org/llama.cpp/releases/download/${LLAMA_BUILD}/llama-${LLAMA_BUILD}-bin-ubuntu-vulkan-x64.tar.gz" \
-  | tar -xz --strip-components=1 -C /usr/lib/llama.cpp/
+  --retry 5 \
+  --retry-delay 10 \
+  --retry-all-errors \
+  --connect-timeout 30 \
+  --max-time 600 \
+  -o "${LLAMA_TARBALL}" \
+  "${LLAMA_URL}"
+tar -xzf "${LLAMA_TARBALL}" --strip-components=1 -C /usr/lib/llama.cpp/
+rm -f "${LLAMA_TARBALL}"
 chmod +x /usr/lib/llama.cpp/llama-server
+# SELinux labels files under /usr/lib as lib_t by default; systemd cannot execute lib_t, so changing to bin_t.
+# The alternative would be to extract into /usr/bin as it would get bin_t automatically, but the tarball ships llama-server
+# alongside bundled .so files (RUNPATH=$ORIGIN) and creates a messy bin directory. 
+# So we chose to write the binary to /usr/lib/llama.cpp and label it bin_t.
+chcon -t bin_t /usr/lib/llama.cpp/llama-server
 ln -sf ../lib/llama.cpp/llama-server /usr/bin/llama-server
 
 ### Install packages

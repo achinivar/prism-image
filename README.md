@@ -25,6 +25,23 @@ Prism OS is distributed as a signed OCI image (for users rebasing from Fedora Si
 
 Applications talk to a local OpenAI-compatible endpoint. The OS handles everything underneath: model selection, hardware acceleration, context management. Apps don't need to know how any of it works.
 
+## How to Install in a Fedora Silverblue based distro
+
+1. Check what you're currently booted into:
+   ```bash
+   sudo bootc status
+   ```
+
+2. Switch to Prism OS with the command below and restart your computer
+   ```bash
+   sudo bootc switch ghcr.io/achinivar/prism-image:latest
+   ```
+
+3. If you need to roll back: Run the command below and restart your computer
+   ```bash
+   sudo bootc rollback
+   ```
+
 ## Built on
 
 - [Fedora Silverblue](https://fedoraproject.org/silverblue/) — immutable Fedora base
