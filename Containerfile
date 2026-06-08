@@ -8,7 +8,7 @@ ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/silverblue:44
 # then copies repo files into it so later stages can bind-mount them during the main RUN
 FROM scratch AS ctx
 # NOTE - Use the /ctx prefix to access the copied over files in the RUN command below
-COPY build_files /ctx/build_files
+COPY build_files /build_files
 COPY sys_files /sys_files
 # TODO: packages.json should contain lists of RPM packages to install or remove
 #COPY packages.json /packages.json
@@ -41,7 +41,7 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/build.sh && \
+    /ctx/build_files/build.sh && \
     /ctx/build_files/post_build.sh
 
 ### LINTING
