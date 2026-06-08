@@ -2,13 +2,11 @@
 
 set -euo pipefail
 
-MODEL="/var/lib/llama/models/default.gguf"
+MODEL="/var/lib/prism/models/default.gguf"
 MODEL_URL="https://huggingface.co/unsloth/Qwen3.5-2B-GGUF/resolve/main/Qwen3.5-2B-Q4_K_M.gguf"
 
 # Model already present — nothing to do (llama-server.path starts the server)
 [[ -f "$MODEL" ]] && exit 0
-
-install -d /var/lib/llama/models
 
 if [[ "${1:-}" == "--gui" ]]; then
     if ! zenity --question \
@@ -24,3 +22,6 @@ fi
 curl -fL --retry 3 -o "${MODEL}.part" "$MODEL_URL"
 mv "${MODEL}.part" "$MODEL"
 chmod 644 "$MODEL"
+# Apply the SELinux label policy expects for /var/lib (var_lib_t). Downloads from a user
+# session may inherit the wrong context; without this, llama-server can mmap-fail the model.
+restorecon -v "$MODEL" 2>/dev/null || chcon -t var_lib_t "$MODEL"

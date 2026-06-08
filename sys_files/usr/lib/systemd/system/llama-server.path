@@ -2,7 +2,7 @@
 Description=Start llama-server when the default model is available
 
 [Path]
-PathExists=/var/lib/llama/models/default.gguf
+PathExists=/var/lib/prism/models/default.gguf
 
 [Install]
 WantedBy=multi-user.target

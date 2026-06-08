@@ -2,20 +2,19 @@
 Description=llama.cpp OpenAI-compatible API server
 After=network-online.target
 Wants=network-online.target
-ConditionPathExists=/var/lib/prism/llama-server.env
-ConditionPathExists=/var/lib/llama/models/default.gguf
+ConditionPathExists=/var/lib/prism/models/default.gguf
 
 [Service]
 Type=simple
-EnvironmentFile=/var/lib/prism/llama-server.env
+EnvironmentFile=/usr/lib/prism/llama-server.env
+WorkingDirectory=/usr/lib/llama.cpp
 ExecStart=/usr/lib/llama.cpp/llama-server \
     --host 127.0.0.1 \
     --port 8080 \
-    --model /var/lib/llama/models/default.gguf \
+    --model /var/lib/prism/models/default.gguf \
     --ctx-size ${PRISM_CTX_SIZE} \
     --n-gpu-layers ${PRISM_GPU_LAYERS}
 Restart=on-failure
-StateDirectory=llama
 
 [Install]
 WantedBy=multi-user.target
